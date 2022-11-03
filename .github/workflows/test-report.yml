@@ -12,6 +12,16 @@ jobs:
         with:
           ref: gh-pages
 
+      - name: Download results from other repository
+        run: |
+          gh run download -p "allure-*" -R dholth/conda-package-handling 3300350049
+
+      - name: Unpack test results
+        working-directory: allure-results
+        run: |
+          # strip the existing allure-results/ embedded in the .tar.gz
+          find -name allure-\*.tar.gz -exec tar -xf {} --strip-components=1 \;
+
       - uses: actions/setup-java@v3
         with:
           # Don't know which Java is the best.
@@ -21,16 +31,6 @@ jobs:
       - run: |
           curl -L -O https://github.com/allure-framework/allure2/releases/download/2.20.0/allure-2.20.0.tgz
           tar -xf allure-2.20.0.tgz
-
-      - name: Download results from other repository
-        run: |
-          gh run download -p allure-* -R dholth/conda-package-handling 3300350049
-
-      - name: Unpack test results
-        working-directory: allure-results
-        run: |
-          # strip the existing allure-results/ embedded in the .tar.gz
-          find -name allure-\*.tar.gz -exec tar -xf {} --strip-components=1 \;
 
       - name: Make report
         run: |
