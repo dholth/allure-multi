@@ -17,8 +17,8 @@ jobs:
   report:
     runs-on: ubuntu-latest
     steps:
-      # TODO also checkout the main branch if we want to use .sh scripts
-      # alongside the .yml
+      # Also checkout the main branch if we want to use scripts in separate
+      # files alongside the workflows .yml
       - name: Checkout main branch
         uses: actions/checkout@v3
         with:
@@ -45,6 +45,8 @@ jobs:
           curl -L -O https://github.com/allure-framework/allure2/releases/download/2.20.0/allure-2.20.0.tgz
           tar -xf allure-2.20.0.tgz
 
+      # environments all set up.
+
       - name: Download results from other repository
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -69,10 +71,11 @@ jobs:
         run: ls -R
 
       # https://lannonbr.com/blog/2019-12-09-git-commit-in-actions/
-      - name: setup git config
-        run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
+      # - name: setup git config
+      #   run: |
+      #     cd gh-pages
+      #     git config user.name "GitHub Actions Bot"
+      #     git config user.email "<>"
 
       # to keep track of history, even though we deploy gh-pages ourselves
       - name: commit
