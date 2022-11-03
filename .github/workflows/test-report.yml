@@ -1,5 +1,8 @@
 name: Test Reports
 
+on:
+  push
+
 jobs:
   allure-report:
     runs-on: ubuntu-latest
