@@ -24,7 +24,7 @@ jobs:
           gh run download -p "allure-*" -R dholth/conda-package-handling 3300350049
 
           # strip the existing allure-results/ embedded in the .tar.gz
-          find -name allure-\*.tar.gz -exec tar -xf {} --strip-components=1 \;
+          find -name allure-results.tar.gz -exec tar -xf {} --strip-components=1 \;
 
       - uses: actions/setup-java@v3
         with:
@@ -38,7 +38,7 @@ jobs:
 
       - name: Make report
         run: |
-          ./allure-2.20.0/bin/allure generate --clean temp/allure-results
+          ./allure-2.20.0/bin/allure generate --clean temp
 
       - name: List everything
         run: ls -R
