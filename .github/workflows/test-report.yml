@@ -18,6 +18,9 @@ jobs:
         # better in a temp directory? See also RUNNER_TEMP
         run: |
           mkdir -p temp; cd temp
+
+          # Some of these are results and others are reports.
+          # In the future, upload results with a unique prefix.
           gh run download -p "allure-*" -R dholth/conda-package-handling 3300350049
 
           # strip the existing allure-results/ embedded in the .tar.gz
