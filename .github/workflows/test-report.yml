@@ -19,10 +19,31 @@ jobs:
     steps:
       # TODO also checkout the main branch if we want to use .sh scripts
       # alongside the .yml
+      - name: Checkout main branch
+        uses: actions/checkout@v3
+        with:
+          path: main
+
       - name: Checkout gh-pages branch
         uses: actions/checkout@v3
         with:
           ref: gh-pages
+          path: gh-pages
+
+      - uses: actions/setup-java@v3
+        with:
+          # Don't know which Java is the best.
+          distribution: 'temurin'
+          java-version: '17'
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Download allure
+        run: |
+          curl -L -O https://github.com/allure-framework/allure2/releases/download/2.20.0/allure-2.20.0.tgz
+          tar -xf allure-2.20.0.tgz
 
       - name: Download results from other repository
         env:
@@ -38,19 +59,11 @@ jobs:
           # strip the existing allure-results/ embedded in the .tar.gz
           find -name allure-results.tar.gz -exec tar -xf {} --strip-components=1 \;
 
-      - uses: actions/setup-java@v3
-        with:
-          # Don't know which Java is the best.
-          distribution: 'temurin'
-          java-version: '17'
-
-      - run: |
-          curl -L -O https://github.com/allure-framework/allure2/releases/download/2.20.0/allure-2.20.0.tgz
-          tar -xf allure-2.20.0.tgz
-
       - name: Make report
         run: |
-          ./allure-2.20.0/bin/allure generate --clean temp
+          # todo python
+          cd gh-pages
+          ../allure-2.20.0/bin/allure generate --clean ../temp
 
       - name: List everything
         run: ls -R
@@ -65,6 +78,7 @@ jobs:
       - name: commit
         run: |
           # Stage the file, commit and push
+          cd gh-pages
           git add allure-report
           git commit -m "reports"
           git push origin gh-pages
@@ -73,7 +87,7 @@ jobs:
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload report
-          path: allure-report
+          path: gh-pages/allure-report
 
   pages:
 
