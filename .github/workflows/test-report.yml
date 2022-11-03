@@ -19,9 +19,8 @@ jobs:
           java-version: '17'
 
       - run: |
-          curl --location --remote-name https://github.com/allure-framework/allure2/releases/download/2.20.0/allure-2.20.0.tgz
+          curl --location --remote-file https://github.com/allure-framework/allure2/releases/download/2.20.0/allure-2.20.0.tgz
           tar -xf allure-2.20.0.tgz
-          ./allure-2.20.0/bin/allure
 
       - name: Download results from other repository
         run: |
@@ -33,17 +32,22 @@ jobs:
           # strip the existing allure-results/ embedded in the .tar.gz
           find -name allure-\*.tar.gz -exec tar -xf {} --strip-components=1 \;
 
+      - name: Make report
+        run: |
+          ./allure-2.20.0/bin/allure generate --clean
+
       - name: List everything
         run: ls -R
 
-      # - name: Upload history
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: allure-history
-      #     path: allure-history
+      # https://lannonbr.com/blog/2019-12-09-git-commit-in-actions/
+      - name: setup git config
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
 
-      # - name: Upload report
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: allure-report
-      #     path: allure-report
+      - name: commit
+        run: |
+          # Stage the file, commit and push
+          git add allure-report
+          git commit -m "reports"
+          git push origin gh-pages
