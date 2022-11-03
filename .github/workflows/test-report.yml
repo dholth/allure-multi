@@ -1,0 +1,48 @@
+name: Test Reports
+
+jobs:
+  allure-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+
+      - uses: actions/setup-java@v3
+        with:
+          # Don't know which Java is the best.
+          distribution: 'temurin'
+          java-version: '17'
+
+      - run: |
+          curl https://github.com/allure-framework/allure2/releases/download/2.20.0/allure-2.20.0.tgz | tar -zx -
+          ./allure-2.20.0/bin/allure
+
+      - name: Download test results
+        uses: actions/download-artifact@v3
+        with:
+          path: allure-results
+        run: |
+          gh run download -p allure-* -R dholth/conda-package-handling 3300350049
+
+      - name: Unpack test results
+        working-directory: allure-results
+        run: |
+          # strip the existing allure-results/ embedded in the .tar.gz
+          find -name allure-\*.tar.gz -exec tar -xf {} --strip-components=1 \;
+
+      - name: List test results
+        run: ls -R allure-results
+
+      # - name: Upload history
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: allure-history
+      #     path: allure-history
+
+      # - name: Upload report
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: allure-report
+      #     path: allure-report
