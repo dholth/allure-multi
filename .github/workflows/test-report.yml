@@ -20,6 +20,8 @@ jobs:
 
       - run: |
           curl -O https://github.com/allure-framework/allure2/releases/download/2.20.0/allure-2.20.0.tgz
+          ls -lh
+          cat allure-2.20.0.tgz
           tar -xf allure-2.20.0.tgz
           ./allure-2.20.0/bin/allure
 
