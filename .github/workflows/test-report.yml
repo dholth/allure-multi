@@ -19,7 +19,6 @@ jobs:
           gh run download -p "allure-*" -R dholth/conda-package-handling 3300350049
 
       - name: Unpack test results
-        working-directory: allure-results
         run: |
           ls
           # strip the existing allure-results/ embedded in the .tar.gz
