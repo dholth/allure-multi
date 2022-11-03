@@ -13,6 +13,8 @@ jobs:
           ref: gh-pages
 
       - name: Download results from other repository
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh run download -p "allure-*" -R dholth/conda-package-handling 3300350049
 
