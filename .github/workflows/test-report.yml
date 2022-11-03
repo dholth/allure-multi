@@ -19,9 +19,7 @@ jobs:
           java-version: '17'
 
       - run: |
-          curl -O https://github.com/allure-framework/allure2/releases/download/2.20.0/allure-2.20.0.tgz
-          ls -lh
-          cat allure-2.20.0.tgz
+          curl --location --remote-name https://github.com/allure-framework/allure2/releases/download/2.20.0/allure-2.20.0.tgz
           tar -xf allure-2.20.0.tgz
           ./allure-2.20.0/bin/allure
 
