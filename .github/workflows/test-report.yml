@@ -1,12 +1,24 @@
 name: Test Reports
 
 on:
-  push
+  push:
+  repository_dispatch:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      repository:
+        required: true
+        type: string
+      run:
+        required: true
+        type: string
 
 jobs:
   report:
     runs-on: ubuntu-latest
     steps:
+      # TODO also checkout the main branch if we want to use .sh scripts
+      # alongside the .yml
       - name: Checkout gh-pages branch
         uses: actions/checkout@v3
         with:
