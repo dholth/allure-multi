@@ -15,12 +15,11 @@ jobs:
       - name: Download results from other repository
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # better in a temp directory? See also RUNNER_TEMP
         run: |
+          mkdir -p temp; cd temp
           gh run download -p "allure-*" -R dholth/conda-package-handling 3300350049
 
-      - name: Unpack test results
-        run: |
-          ls
           # strip the existing allure-results/ embedded in the .tar.gz
           find -name allure-\*.tar.gz -exec tar -xf {} --strip-components=1 \;
 
@@ -36,7 +35,7 @@ jobs:
 
       - name: Make report
         run: |
-          ./allure-2.20.0/bin/allure generate --clean
+          ./allure-2.20.0/bin/allure generate --clean temp/allure-results
 
       - name: List everything
         run: ls -R
