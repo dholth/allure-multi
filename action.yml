@@ -7,6 +7,10 @@ branding:
 
 runs:
   using: "composite"
+  defaults:
+    run:
+      shell: bash
+      # it can accept shell: python!
   steps:
     - uses: actions/setup-java@v3
       with:
