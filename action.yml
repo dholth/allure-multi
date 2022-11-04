@@ -86,6 +86,8 @@ runs:
 
         python3 --version
 
+        env
+
 #     # https://lannonbr.com/blog/2019-12-09-git-commit-in-actions/
 #     - name: setup git config
 #       run: |
