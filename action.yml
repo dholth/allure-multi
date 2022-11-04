@@ -84,6 +84,8 @@ runs:
         echo $GITHUB_ACTION_PATH
         ls -R $GITHUB_ACTION_PATH
 
+        python3 --version
+
 #     # https://lannonbr.com/blog/2019-12-09-git-commit-in-actions/
 #     - name: setup git config
 #       run: |
