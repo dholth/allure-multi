@@ -1,126 +1,105 @@
-name: Test Reports
+name: "Allure Multi"
+description: "Generate multiple allure reports from artifacts and publish to gh-pages."
+author: "dholth"
+runs:
+  using: 'node16'
+  main: 'dist/setup/index.js'
+  post: 'dist/cache-save/index.js'
+  post-if: success()
+branding:
+  icon: 'code'
+  color: 'yellow'
 
-on:
-  push:
-  repository_dispatch:
-  workflow_dispatch:
-  workflow_call:
-    inputs:
-      repository:
-        required: true
-        type: string
-      run:
-        required: true
-        type: string
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-java@v3
+      with:
+        # Don't know which Java is the best.
+        distribution: 'temurin'
+        java-version: '17'
 
-jobs:
-  report:
-    runs-on: ubuntu-latest
-    steps:
-      # Also checkout the main branch if we want to use scripts in separate
-      # files alongside the workflows .yml
-      - name: Checkout main branch
-        uses: actions/checkout@v3
-        with:
-          path: main
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
 
-      - name: Checkout gh-pages branch
-        uses: actions/checkout@v3
-        with:
-          ref: gh-pages
-          path: gh-pages
+    - name: Download allure
+      run: |
+        curl -L -O https://github.com/allure-framework/allure2/releases/download/2.20.0/allure-2.20.0.tgz
+        tar -xf allure-2.20.0.tgz
 
-      - uses: actions/setup-java@v3
-        with:
-          # Don't know which Java is the best.
-          distribution: 'temurin'
-          java-version: '17'
+    # environments all set up.
+    - name: Download results from other repository
+      run: |
+        mkdir -p temp; cd temp
 
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
+        # Some of these are results and others are reports.
+        # In the future, upload results with a unique prefix.
+        gh run download -p "allure-*" -R dholth/conda-package-handling 3300350049
 
-      - name: Download allure
-        run: |
-          curl -L -O https://github.com/allure-framework/allure2/releases/download/2.20.0/allure-2.20.0.tgz
-          tar -xf allure-2.20.0.tgz
+        # strip the existing allure-results/ embedded in the .tar.gz
+        find -name allure-results.tar.gz -exec tar -xf {} --strip-components=1 \;
 
-      # environments all set up.
+    - name: Make report
+      run: |
+        # todo python
+        cd gh-pages
+        ../allure-2.20.0/bin/allure generate --clean ../temp
 
-      - name: Download results from other repository
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # better in a temp directory? See also RUNNER_TEMP
-        run: |
-          mkdir -p temp; cd temp
+    - name: List everything
+      run: ls -R
 
-          # Some of these are results and others are reports.
-          # In the future, upload results with a unique prefix.
-          gh run download -p "allure-*" -R dholth/conda-package-handling 3300350049
+#     # https://lannonbr.com/blog/2019-12-09-git-commit-in-actions/
+#     - name: setup git config
+#       run: |
+#         cd gh-pages # not a global config
+#         git config user.name "GitHub Actions Bot"
+#         git config user.email "<>"
 
-          # strip the existing allure-results/ embedded in the .tar.gz
-          find -name allure-results.tar.gz -exec tar -xf {} --strip-components=1 \;
+#     # to keep track of history, even though we deploy gh-pages ourselves
+#     - name: commit
+#       run: |
+#         # Stage the file, commit and push
+#         cd gh-pages
+#         git add allure-report
+#         git commit -m "reports"
+#         git push origin gh-pages
 
-      - name: Make report
-        run: |
-          # todo python
-          cd gh-pages
-          ../allure-2.20.0/bin/allure generate --clean ../temp
+#     - name: Upload artifact
+#       uses: actions/upload-pages-artifact@v1
+#       with:
+#         # Upload report
+#         path: gh-pages/allure-report
 
-      - name: List everything
-        run: ls -R
+#   pages:
 
-      # https://lannonbr.com/blog/2019-12-09-git-commit-in-actions/
-      - name: setup git config
-        run: |
-          cd gh-pages # not a global config
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
+#     runs-on: ubuntu-latest
+#     # if: github.ref == 'refs/heads/main'
+#     needs: [report]
 
-      # to keep track of history, even though we deploy gh-pages ourselves
-      - name: commit
-        run: |
-          # Stage the file, commit and push
-          cd gh-pages
-          git add allure-report
-          git commit -m "reports"
-          git push origin gh-pages
+#     # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+#     permissions:
+#       contents: read
+#       pages: write
+#       id-token: write
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          # Upload report
-          path: gh-pages/allure-report
+#     environment:
+#       name: github-pages
+#       url: ${{ steps.deployment.outputs.page_url }}
 
-  pages:
+#     steps:
+#       - name: Deploy to GitHub Pages
+#         id: deployment
+#         uses: actions/deploy-pages@v1
 
-    runs-on: ubuntu-latest
-    # if: github.ref == 'refs/heads/main'
-    needs: [report]
-
-    # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
-
-# https://docs.github.com/en/actions/using-workflows/reusing-workflows
-#
-# Will this workflow be able to checkout and push to its own repository, when called?
-#
-# jobs:
-#   call-workflow-1-in-local-repo:
-#     uses: octo-org/this-repo/.github/workflows/workflow-1.yml@172239021f7ba04fe7327647b213799853a9eb89
-#   call-workflow-2-in-local-repo:
-#     uses: ./.github/workflows/workflow-2.yml
-#   call-workflow-in-another-repo:
-#     uses: octo-org/another-repo/.github/workflows/workflow.yml@v1
+# # https://docs.github.com/en/actions/using-workflows/reusing-workflows
+# #
+# # Will this workflow be able to checkout and push to its own repository, when called?
+# #
+# # jobs:
+# #   call-workflow-1-in-local-repo:
+# #     uses: octo-org/this-repo/.github/workflows/workflow-1.yml@172239021f7ba04fe7327647b213799853a9eb89
+# #   call-workflow-2-in-local-repo:
+# #     uses: ./.github/workflows/workflow-2.yml
+# #   call-workflow-in-another-repo:
+# #     uses: octo-org/another-repo/.github/workflows/workflow.yml@v1
