@@ -1,14 +1,9 @@
 name: "Allure Multi"
 description: "Generate multiple allure reports from artifacts and publish to gh-pages."
 author: "dholth"
-runs:
-  using: 'node16'
-  main: 'dist/setup/index.js'
-  post: 'dist/cache-save/index.js'
-  post-if: success()
 branding:
-  icon: 'code'
-  color: 'yellow'
+  icon: 'book'
+  color: 'green'
 
 runs:
   using: "composite"
