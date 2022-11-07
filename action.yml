@@ -25,12 +25,6 @@ inputs:
       [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
     default: ${{ github.token }}
 
-defaults:
-  run:
-    shell: bash
-  # it can accept shell: python!
-  # this kind of action doesn't appear to accept a default shell
-
 runs:
   using: "composite"
   steps:
@@ -47,6 +41,7 @@ runs:
     - name: Download allure
       shell: bash
       run: |
+        cd $RUNNER_TEMP
         curl -L -O https://github.com/allure-framework/allure2/releases/download/2.20.0/allure-2.20.0.tgz
         tar -xf allure-2.20.0.tgz
 
@@ -57,22 +52,22 @@ runs:
         # necessary to run gh cli
         GH_TOKEN: ${{ github.token }}
       run: |
-        mkdir -p temp; cd temp
 
         # Some of these are results and others are reports.
         # In the future, upload results with a unique prefix.
-        gh run download -p "allure-*" -R dholth/conda-package-handling 3300350049
+        gh run download -p "allure-*" -R $INPUT_REPOSITORY 3300350049
 
         # strip the existing allure-results/ embedded in the .tar.gz
         find -name allure-results.tar.gz -exec tar -xf {} --strip-components=1 \;
 
     - name: Make report
       shell: bash
+      env:
+        ALLURE_RESULTS=
       run: |
         # todo python
-        mkdir -p gh-pages
-        cd gh-pages
-        ../allure-2.20.0/bin/allure generate --clean ../temp
+        # allure generate --output <report dir> input-dir
+        $RUNNER_TEMP/allure-2.20.0/bin/allure generate --clean ../temp
 
     - name: List everything
       shell: bash
@@ -87,58 +82,3 @@ runs:
         python3 --version
 
         env
-
-#     # https://lannonbr.com/blog/2019-12-09-git-commit-in-actions/
-#     - name: setup git config
-#       run: |
-#         cd gh-pages # not a global config
-#         git config user.name "GitHub Actions Bot"
-#         git config user.email "<>"
-
-#     # to keep track of history, even though we deploy gh-pages ourselves
-#     - name: commit
-#       run: |
-#         # Stage the file, commit and push
-#         cd gh-pages
-#         git add allure-report
-#         git commit -m "reports"
-#         git push origin gh-pages
-
-#     - name: Upload artifact
-#       uses: actions/upload-pages-artifact@v1
-#       with:
-#         # Upload report
-#         path: gh-pages/allure-report
-
-#   pages:
-
-#     runs-on: ubuntu-latest
-#     # if: github.ref == 'refs/heads/main'
-#     needs: [report]
-
-#     # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-#     permissions:
-#       contents: read
-#       pages: write
-#       id-token: write
-
-#     environment:
-#       name: github-pages
-#       url: ${{ steps.deployment.outputs.page_url }}
-
-#     steps:
-#       - name: Deploy to GitHub Pages
-#         id: deployment
-#         uses: actions/deploy-pages@v1
-
-# # https://docs.github.com/en/actions/using-workflows/reusing-workflows
-# #
-# # Will this workflow be able to checkout and push to its own repository, when called?
-# #
-# # jobs:
-# #   call-workflow-1-in-local-repo:
-# #     uses: octo-org/this-repo/.github/workflows/workflow-1.yml@172239021f7ba04fe7327647b213799853a9eb89
-# #   call-workflow-2-in-local-repo:
-# #     uses: ./.github/workflows/workflow-2.yml
-# #   call-workflow-in-another-repo:
-# #     uses: octo-org/another-repo/.github/workflows/workflow.yml@v1
