@@ -62,8 +62,6 @@ runs:
 
     - name: Make report
       shell: bash
-      env:
-        ALLURE_RESULTS=
       run: |
         # todo python
         # allure generate --output <report dir> input-dir
