@@ -51,6 +51,7 @@ runs:
       env:
         # necessary to run gh cli
         GH_TOKEN: ${{ github.token }}
+        INPUT_REPOSITORY: ${{ input.repository }}
       run: |
 
         # Some of these are results and others are reports.
