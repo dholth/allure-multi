@@ -51,12 +51,11 @@ runs:
       env:
         # necessary to run gh cli
         GH_TOKEN: ${{ github.token }}
-        INPUT_REPOSITORY: ${{ repository }}
       run: |
 
         # Some of these are results and others are reports.
         # In the future, upload results with a unique prefix.
-        gh run download -p "allure-*" -R $INPUT_REPOSITORY 3300350049
+        gh run download -p "allure-*" -R ${{ inputs.repository }} 3300350049
 
         # strip the existing allure-results/ embedded in the .tar.gz
         find -name allure-results.tar.gz -exec tar -xf {} --strip-components=1 \;
