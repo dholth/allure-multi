@@ -55,6 +55,10 @@ runs:
         pwd
         python $GITHUB_ACTION_PATH/action.py
 
+        # generate index.html
+        cd gh-pages
+        find . -name index.html -exec echo "<a href='"{}"'>{}</a><br>" \; > index.html
+
     - name: List everything
       shell: bash
       run: |
