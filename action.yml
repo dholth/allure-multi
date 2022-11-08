@@ -45,27 +45,34 @@ runs:
         curl -L -O https://github.com/allure-framework/allure2/releases/download/2.20.0/allure-2.20.0.tgz
         tar -xf allure-2.20.0.tgz
 
-    # environments all set up.
-    - name: Download results from other repository
+    - name: Make reports
       shell: bash
       env:
-        # necessary to run gh cli
-        GH_TOKEN: ${{ github.token }}
+        ALLURE_PATH: ${{ env.RUNNER_TEMP }}/allure-2.20.0/bin/allure
       run: |
+        python $GITHUB_ACTION_PATH/action.py
 
-        # Some of these are results and others are reports.
-        # In the future, upload results with a unique prefix.
-        gh run download -p "allure-*" -R ${{ inputs.repository }} 3300350049
+    # # environments all set up.
+    # - name: Download results from other repository
+    #   shell: bash
+    #   env:
+    #     # necessary to run gh cli
+    #     GH_TOKEN: ${{ github.token }}
+    #   run: |
 
-        # strip the existing allure-results/ embedded in the .tar.gz
-        find -name allure-results.tar.gz -exec tar -xf {} --strip-components=1 \;
+    #     # Some of these are results and others are reports.
+    #     # In the future, upload results with a unique prefix.
+    #     gh run download -p "allure-*" -R ${{ inputs.repository }} 3300350049
 
-    - name: Make report
-      shell: bash
-      run: |
-        # todo python
-        # allure generate --output <report dir> input-dir
-        $RUNNER_TEMP/allure-2.20.0/bin/allure generate --clean ../temp
+    #     # strip the existing allure-results/ embedded in the .tar.gz
+    #     find -name allure-results.tar.gz -exec tar -xf {} --strip-components=1 \;
+
+    # - name: Make report
+    #   shell: bash
+    #   run: |
+    #     # todo python
+    #     # allure generate --output <report dir> input-dir
+    #     $RUNNER_TEMP/allure-2.20.0/bin/allure generate --clean ../temp
 
     - name: List everything
       shell: bash
