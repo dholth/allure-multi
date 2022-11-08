@@ -100,7 +100,7 @@ def report_run(
 
         # allure generate --output <report dir> input-dir
         command = [
-            "allure",
+            ALLURE,
             "generate",
             "--clean",
             "--output",
