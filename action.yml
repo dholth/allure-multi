@@ -48,10 +48,11 @@ runs:
     - name: Make reports
       shell: bash
       env:
-        ALLURE_PATH: ${{ env.RUNNER_TEMP }}/allure-2.20.0/bin/allure
         # necessary to run gh cli
         GH_TOKEN: ${{ github.token }}
       run: |
+        export ALLURE_PATH=$RUNNER_TEMP/allure-2.20.0/bin/allure
+        pwd
         python $GITHUB_ACTION_PATH/action.py
 
     - name: List everything
