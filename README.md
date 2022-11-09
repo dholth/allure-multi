@@ -27,7 +27,7 @@ How to use
     path: allure-results.tar.gz
 ```
 
-2. Clone https://github.com/dholth/allure-multi-target, as a template. Make sure it has a `gh-pages` branch. Configure github pages to use the `GitHub Actions` source, instead of `Deploy from a branch`
+2. Fork https://github.com/dholth/allure-multi-target as a template. Make sure it has a `gh-pages` branch. Configure github pages to use the `GitHub Actions` source, instead of `Deploy from a branch`
 
 3. Edit `.github/workflows/build-report.yml` to point to the repository configured in (1). The action will download all artifacts named `allure-*` (or what's specified in the pattern).
 Artifacts are grouped into reports based on regular expression matching, or everything after `allure-` by default.
@@ -42,3 +42,5 @@ Artifacts are grouped into reports based on regular expression matching, or ever
 ```
 
 > For example, if your tests are split into `allure-osx-1` and `allure-osx-2`, and `allure-linux-1` and `allure-linux-2`, the pattern `allure-(.*)-.*` creates an `osx` report combining `allure-osx-1` and `allure-osx-2`, and a `linux` report combining `allure-linux-1` and `allure-linux-2`. This is especially useful for parallel test runs, where parts of the test suite run on different machines.
+
+4. Manually trigger this action to download new (and old) test artifacts again.
