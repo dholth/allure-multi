@@ -13,6 +13,9 @@ import re
 
 ALLURE = os.environ.get("ALLURE_PATH", "allure")
 
+# is one of these correct?
+REPOSITORY = os.environ.get("INPUT_REPOSITORY") or os.environ.get("INPUTS_REPOSITORY")
+
 
 def list_runs(repository):
     runs = subprocess.run(
@@ -111,11 +114,11 @@ def report_run(
 
 
 if __name__ == "__main__":
-    repository = "dholth/conda-package-handling"
+    repository = REPOSITORY
+    assert repository, "no repository!"
     # group multiple assets together
     pattern = re.compile(r"allure-(\d.*)-latest")
-    for run in list_runs(repository):
-        # TODO reverse list_runs; are from newest to oldest
+    for run in reversed(list_runs(repository)):
         # TODO skip processed runs
         if run["status"] != "completed":
             continue
