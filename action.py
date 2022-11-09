@@ -13,9 +13,12 @@ import re
 
 ALLURE = os.environ.get("ALLURE_PATH", "allure")
 
-# is one of these correct?
-REPOSITORY = os.environ.get("INPUT_REPOSITORY") or os.environ.get("INPUTS_REPOSITORY")
-
+# pass in env: section; not automatic from github actions
+REPOSITORY = os.environ.get("INPUT_REPOSITORY")
+# glob pattern used to download some artifacts
+PATTERN = os.environ.get("INPUT_ARTIFACT_PATTERN")
+# regex matching the group part of an artifact
+GROUP_REGEX = os.environ.get("INPUT_ARTIFACT_GROUP")
 
 def list_runs(repository):
     runs = subprocess.run(
@@ -34,7 +37,7 @@ def list_runs(repository):
     return json.loads(runs.stdout)
 
 
-def download_run(repository, run_id, pattern="allure-*"):
+def download_run(repository, run_id, pattern=PATTERN):
     """
     Download artifacts for a single run.
     """

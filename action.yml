@@ -24,6 +24,14 @@ inputs:
       Also when generating a new PAT, select the least scopes necessary.
       [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
     default: ${{ github.token }}
+  pattern:
+    description: >
+      Glob pattern to limit artifact downloads.
+    default: allure-*
+  group:
+    description: >
+      Regex matching common part of multiple-artifacts for a single report.
+    default: allure-(.*)
 
 runs:
   using: "composite"
@@ -51,6 +59,8 @@ runs:
         # necessary to run gh cli
         GH_TOKEN: ${{ github.token }}
         INPUT_REPOSITORY: ${{ inputs.repository }}
+        INPUT_ARTIFACT_PATTERN: ${{ inputs.pattern }}
+        INPUT_ARTIFACT_GROUP: ${{ inputs.group }}
       run: |
         export ALLURE_PATH=$RUNNER_TEMP/allure-2.20.0/bin/allure
         pwd
