@@ -18,7 +18,8 @@ REPOSITORY = os.environ.get("INPUT_REPOSITORY")
 # glob pattern used to download some artifacts
 PATTERN = os.environ.get("INPUT_ARTIFACT_PATTERN")
 # regex matching the group part of an artifact
-GROUP_REGEX = os.environ.get("INPUT_ARTIFACT_GROUP")
+GROUP_REGEX = os.environ.get("INPUT_ARTIFACT_GROUP", "allure-(\d.*)")
+
 
 def list_runs(repository):
     runs = subprocess.run(
@@ -120,7 +121,7 @@ if __name__ == "__main__":
     repository = REPOSITORY
     assert repository, "no repository!"
     # group multiple assets together
-    pattern = re.compile(r"allure-(\d.*)-latest")
+    pattern = re.compile(GROUP_REGEX)
     for run in reversed(list_runs(repository)):
         # TODO skip processed runs
         if run["status"] != "completed":
