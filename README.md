@@ -5,6 +5,8 @@ Generate multiple allure reports from a third repository, using github actions' 
 
 Allows hosting of allure reports in a github pages separate from the tested project.
 
+Currently, the tested project must be public.
+
 How to use
 ----------
 
