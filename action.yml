@@ -67,7 +67,5 @@ runs:
 
         # generate index.html
         cd gh-pages
-        echo "<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
-</head><body><div class="container">
-<h1>Test reports</h1>" > index.html
+        echo "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css'><div class='container'><h1>Test reports</h1>" > index.html
         find . -name index.html -exec echo "<a href='"{}"'>{}</a><br>" \; >> index.html
